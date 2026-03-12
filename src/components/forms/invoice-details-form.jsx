@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
   Field,
@@ -18,21 +18,33 @@ import InvoiceDetailsFormSchema from "@/schemas/invoice-details-form-schema";
 import SelectOptionDropdown from "../select-option-dropdown";
 import { debounce } from "lodash";
 import ColorPickerCombobox from "../color-picker-combobox";
+import { useDispatch, useSelector } from "react-redux";
+import { updateInvoiceDetails } from "@/store/slices/invoice-slice";
+import { useFormErrorSync } from "@/hooks/use-form-error-sync";
 
 function InvoiceDetailsForm() {
+  const dispatch = useDispatch();
+  const invoiceFields = useSelector((state) => state.invoice.invoiceFields);
+
   const form = useForm({
     resolver: zodResolver(InvoiceDetailsFormSchema),
     defaultValues: {
-      currency: "USD",
-      darkMode: "light",
-      themeColor: "#FF6900",
-      invoicePrefix: "Invoice INV-",
-      serialNumber: "0001",
-      invoiceDate: new Date() || "",
-      dueDate: null,
-      paymentTerms: "",
-      billingDetails: [],
+      currency: invoiceFields?.invoiceDetails?.currency ?? "USD",
+      darkMode: invoiceFields?.invoiceDetails?.theme?.mode ?? "light",
+      themeColor: invoiceFields?.invoiceDetails?.theme?.baseColor ?? "#FF6900",
+      invoicePrefix:
+        invoiceFields?.invoiceDetails?.invoicePrefix ?? "Invoice INV-",
+      serialNumber: invoiceFields?.invoiceDetails?.serialNumber ?? "0001",
+      invoiceDate: invoiceFields?.invoiceDetails?.invoiceDate
+        ? new Date(invoiceFields.invoiceDetails.invoiceDate)
+        : new Date(),
+      dueDate: invoiceFields?.invoiceDetails?.invoiceDueDate
+        ? new Date(invoiceFields.invoiceDetails.invoiceDueDate)
+        : null,
+      paymentTerms: invoiceFields?.invoiceDetails?.paymentTerms ?? "",
+      billingDetails: invoiceFields?.invoiceDetails?.billingDetails ?? [],
     },
+    mode: "onChange", // validates on change so errors sync in real-time
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -40,24 +52,53 @@ function InvoiceDetailsForm() {
     control: form.control,
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
-  };
+  const {
+    formState: { errors },
+  } = form;
+
+  // ✅ One line per form — unique ID for each
+  useFormErrorSync("invoiceDetailsForm", errors);
+
+  const onSubmit = useCallback(
+    (data) => {
+      dispatch(
+        updateInvoiceDetails({
+          currency: data?.currency,
+          theme: {
+            mode: data?.darkMode,
+            baseColor: data?.themeColor,
+          },
+          invoicePrefix: data?.invoicePrefix,
+          serialNumber: data?.serialNumber,
+          invoiceDate: data?.invoiceDate?.toISOString() ?? null,
+          invoiceDueDate: data?.dueDate?.toISOString() ?? null,
+          paymentTerms: data?.paymentTerms,
+          billingDetails: data?.billingDetails,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  const onSubmitRef = useRef(onSubmit);
 
   const debouncedSubmit = useCallback(
     debounce(() => {
-      form.handleSubmit(onSubmit)();
+      form.handleSubmit((...args) => onSubmitRef.current(...args))();
     }, 1000),
     [],
   );
 
   useEffect(() => {
-    const subscription = form.watch(() => {
-      debouncedSubmit();
-    });
+    onSubmitRef.current = onSubmit;
 
-    return () => subscription.unsubscribe();
-  }, [form, debouncedSubmit]);
+    const subscription = form.watch(() => debouncedSubmit());
+
+    return () => {
+      subscription.unsubscribe();
+      debouncedSubmit.cancel();
+    };
+  }, [onSubmit, debouncedSubmit, form]);
 
   return (
     <form className="w-full">
@@ -457,7 +498,10 @@ function InvoiceDetailsForm() {
                   name={`billingDetails.${index}.type`}
                   control={form.control}
                   render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid} className="gap-2 col-span-full @[392px]:col-auto">
+                    <Field
+                      data-invalid={fieldState.invalid}
+                      className="gap-2 col-span-full @[392px]:col-auto"
+                    >
                       <FieldLabel
                         htmlFor={`type-select-${index}`}
                         className="text-xs max-w-fit"
@@ -491,7 +535,7 @@ function InvoiceDetailsForm() {
                 />
               </div>
 
-               <Button
+              <Button
                 type="button"
                 variant="destructive"
                 size="sm"

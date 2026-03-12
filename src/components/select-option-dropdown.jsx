@@ -21,6 +21,7 @@ function SelectOptionDropdown({ value, onChange, invalid, id, items }) {
       <SelectContent position="popper">
         {items?.map((item) => (
           <SelectItem key={item?.value} value={item?.value}>
+            {item?.icon && <item.icon />}
             {item?.label}
           </SelectItem>
         ))}

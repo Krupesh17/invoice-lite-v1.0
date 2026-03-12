@@ -4,21 +4,62 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import addInvoiceItemFormSchema from "@/schemas/add-invoice-item-form-schema";
+import { useDispatch, useSelector } from "react-redux";
+import { updateInvoiceItems } from "@/store/slices/invoice-slice";
+import { v4 as uuidV4 } from "uuid";
+import { useFormErrorSync } from "@/hooks/use-form-error-sync";
 
 function AddInvoiceItemForm({ setDialogOpen }) {
+  const dispatch = useDispatch();
+  const invoiceFields = useSelector((state) => state.invoice.invoiceFields);
+  const { isInvoiceItemToEdit, invoiceItemToEdit } = useSelector(
+    (state) => state?.dashboard,
+  );
+
   const form = useForm({
     resolver: zodResolver(addInvoiceItemFormSchema),
     defaultValues: {
-      itemName: "",
-      itemDescription: "",
-      quantity: 1,
-      unitPrice: 1,
+      itemName: invoiceItemToEdit?.itemName ?? "",
+      itemDescription: invoiceItemToEdit?.itemDescription ?? "",
+      quantity: invoiceItemToEdit?.quantity ?? 1,
+      unitPrice: invoiceItemToEdit?.unitPrice ?? 1,
     },
+    mode: "onChange", // validates on change so errors sync in real-time
   });
 
+  const {
+    formState: { errors },
+  } = form;
+
+  // ✅ One line per form — unique ID for each
+  useFormErrorSync("addInvoiceItemForm", errors);
+
   const onSubmit = (data) => {
-    console.log(data);
-    setDialogOpen(false);
+    try {
+      if (!data) throw new Error("Invoice item's details are missing.");
+
+      if (isInvoiceItemToEdit) {
+        const invoiceItemList = [...invoiceFields?.invoiceItems];
+        const indexOfItemToUpdate = invoiceItemList?.findIndex(
+          (item) => item?.id === invoiceItemToEdit?.id,
+        );
+        invoiceItemList?.splice(indexOfItemToUpdate, 1, {
+          ...data,
+          id: invoiceItemToEdit?.id,
+        });
+
+        dispatch(updateInvoiceItems(invoiceItemList));
+      } else {
+        const invoiceItemList = [...invoiceFields?.invoiceItems];
+        invoiceItemList?.push({ ...data, id: uuidV4() });
+
+        dispatch(updateInvoiceItems(invoiceItemList));
+      }
+    } catch (err) {
+      console.error(err?.message);
+    } finally {
+      setDialogOpen(false);
+    }
   };
 
   return (
@@ -29,7 +70,10 @@ function AddInvoiceItemForm({ setDialogOpen }) {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid} className="gap-2">
-              <FieldLabel htmlFor="item-name-input" className="text-xs max-w-fit">
+              <FieldLabel
+                htmlFor="item-name-input"
+                className="text-xs max-w-fit"
+              >
                 Item Name
               </FieldLabel>
               <Input
@@ -56,7 +100,10 @@ function AddInvoiceItemForm({ setDialogOpen }) {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid} className="gap-2">
-              <FieldLabel htmlFor="item-description-input" className="text-xs max-w-fit">
+              <FieldLabel
+                htmlFor="item-description-input"
+                className="text-xs max-w-fit"
+              >
                 Item Description
               </FieldLabel>
               <Input
@@ -84,7 +131,10 @@ function AddInvoiceItemForm({ setDialogOpen }) {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-2">
-                <FieldLabel htmlFor="quantity-input" className="text-xs max-w-fit">
+                <FieldLabel
+                  htmlFor="quantity-input"
+                  className="text-xs max-w-fit"
+                >
                   Quantity
                 </FieldLabel>
                 <Input
@@ -111,7 +161,10 @@ function AddInvoiceItemForm({ setDialogOpen }) {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-2">
-                <FieldLabel htmlFor="unit-price-input" className="text-xs max-w-fit">
+                <FieldLabel
+                  htmlFor="unit-price-input"
+                  className="text-xs max-w-fit"
+                >
                   Unit Price
                 </FieldLabel>
                 <Input
@@ -145,7 +198,11 @@ function AddInvoiceItemForm({ setDialogOpen }) {
           </Button>
 
           <Button type="submit" size="sm">
-            Add Item
+            {isInvoiceItemToEdit ? (
+              <span>Update Item</span>
+            ) : (
+              <span>Add Item</span>
+            )}
           </Button>
         </div>
       </FieldGroup>

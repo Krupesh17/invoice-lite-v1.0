@@ -4,7 +4,19 @@ import DashboardLayout from "./layouts/dashboard-layout";
 import CreateInvoiceSection from "./components/create-invoice-section";
 import InvoicesSection from "./components/invoices-section";
 import ManageAssetsSection from "./components/manage-assets-section";
-import { ThemeProvider } from "./contexts/theme-provider";
+import { useTheme } from "./contexts/theme-provider";
+import { Provider } from "react-redux";
+import store from "./store";
+import { Toaster } from "sonner";
+import {
+  CircleAlertIcon,
+  CircleCheckIcon,
+  InfoIcon,
+  LoaderIcon,
+  TriangleAlertIcon,
+  XIcon,
+} from "lucide-react";
+import ErrorPage from "./pages/error-page";
 
 const router = createBrowserRouter([
   {
@@ -26,15 +38,40 @@ const router = createBrowserRouter([
         path: "/assets",
         element: <ManageAssetsSection />,
       },
+      {
+        path: "/edit/:storage/:invoiceId",
+        element: <CreateInvoiceSection />,
+      },
     ],
+  },
+  {
+    path: "*",
+    element: <ErrorPage />,
   },
 ]);
 
+const toastIcons = {
+  close: <XIcon size={20} />,
+  error: <CircleAlertIcon size={20} />,
+  info: <InfoIcon size={20} />,
+  success: <CircleCheckIcon size={20} />,
+  warning: <TriangleAlertIcon size={20} />,
+  loading: <LoaderIcon size={20} />,
+};
+
 function App() {
+  const { theme } = useTheme();
+
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <Provider store={store}>
       <RouterProvider router={router} />
-    </ThemeProvider>
+      <Toaster
+        position="top-center"
+        theme={theme}
+        icons={toastIcons}
+        richColors={true}
+      />
+    </Provider>
   );
 }
 

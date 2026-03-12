@@ -1,7 +1,11 @@
+import InvoicesTable from "./invoices-table";
+
 function InvoicesSection() {
   return (
-    <div>InvoicesSection</div>
-  )
+    <section className="w-full h-full p-4">
+      <InvoicesTable />
+    </section>
+  );
 }
 
-export default InvoicesSection
+export default InvoicesSection;

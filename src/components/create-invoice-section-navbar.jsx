@@ -1,3 +1,4 @@
+import DownloadPopover from "./download-popover";
 import { Button } from "./ui/button";
 import {
   Select,
@@ -7,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { DownloadIcon, ImportIcon } from "lucide-react";
+import { ImportIcon } from "lucide-react";
 
 function CreateInvoiceSectionNavbar({
   selectedLayout,
@@ -40,13 +41,7 @@ function CreateInvoiceSectionNavbar({
           </SelectContent>
         </Select>
 
-        <Button type="button" size="sm" className="max-sm:hidden">
-          <DownloadIcon /> <span>Download</span>
-        </Button>
-
-        <Button type="button" size="icon-sm" className="sm:hidden">
-          <DownloadIcon />
-        </Button>
+        <DownloadPopover />
       </div>
     </nav>
   );

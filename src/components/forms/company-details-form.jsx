@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -14,15 +14,24 @@ import { AlertCircleIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { Button } from "../ui/button";
 import { debounce } from "lodash";
 import companyDetailsFormSchema from "@/schemas/company-details-form-schema";
+import { useDispatch, useSelector } from "react-redux";
+import { updateCompanyDetails } from "@/store/slices/invoice-slice";
+import { useFormErrorSync } from "@/hooks/use-form-error-sync";
 
 function CompanyDetailsForm() {
+  const dispatch = useDispatch();
+  const invoiceFields = useSelector((state) => state.invoice.invoiceFields);
+
   const form = useForm({
     resolver: zodResolver(companyDetailsFormSchema),
     defaultValues: {
-      companyName: "Invoicelite Ltd",
-      companyAddress: "1234 Main Street, Suite 200 Springfield, IL 62704 USA",
-      companyFields: [],
+      companyName: invoiceFields?.companyDetails?.name ?? "InvoiceLite Ltd",
+      companyAddress:
+        invoiceFields?.companyDetails?.address ??
+        "1234 Main Street, Anytown, USA",
+      companyFields: invoiceFields?.companyDetails?.metadata ?? [],
     },
+    mode: "onChange", // validates on change so errors sync in real-time
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -30,24 +39,75 @@ function CompanyDetailsForm() {
     control: form.control,
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
-  };
+  const {
+    formState: { errors },
+  } = form;
+
+  // ✅ One line per form — unique ID for each
+  useFormErrorSync("companyDetailsForm", errors);
+
+  const onSubmit = useCallback(
+    (data) => {
+      dispatch(
+        updateCompanyDetails({
+          logo: invoiceFields?.companyDetails?.logo,
+          signature: invoiceFields?.companyDetails?.signature,
+          name: data.companyName,
+          address: data.companyAddress,
+          metadata: data.companyFields,
+        }),
+      );
+    },
+    [
+      dispatch,
+      invoiceFields?.companyDetails?.logo,
+      invoiceFields?.companyDetails?.signature,
+    ],
+  );
+
+  // Keep a ref to always hold the latest onSubmit — prevents stale closure
+  // inside the debounced function without needing to recreate it
+  const onSubmitRef = useRef(onSubmit);
 
   const debouncedSubmit = useCallback(
     debounce(() => {
-      form.handleSubmit(onSubmit)();
+      form.handleSubmit((...args) => onSubmitRef.current(...args))();
     }, 1000),
-    [],
+    [], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
+  // Here following 'Ref' and 'useEffect' is have use when user on '/edit' path and by default this 
+  // form's accordion is open so the data from invoice to be edited is not reflected in this form
+  // so this 'useEffect' make sure that the form fields have correct data. 
+  const isResettingRef = useRef(false);
+
   useEffect(() => {
+    isResettingRef.current = true;
+    form.reset({
+      companyName: invoiceFields?.companyDetails?.name ?? "InvoiceLite Ltd",
+      companyAddress:
+        invoiceFields?.companyDetails?.address ??
+        "1234 Main Street, Anytown, USA",
+      companyFields: invoiceFields?.companyDetails?.metadata ?? [],
+    });
+  }, [invoiceFields?.companyDetails]);
+
+  useEffect(() => {
+    onSubmitRef.current = onSubmit; // always fresh before subscription fires
+
     const subscription = form.watch(() => {
+      if (isResettingRef.current) {
+        isResettingRef.current = false; // ✅ skip the dispatch triggered by reset
+        return;
+      }
       debouncedSubmit();
     });
 
-    return () => subscription.unsubscribe();
-  }, [form, debouncedSubmit]);
+    return () => {
+      subscription.unsubscribe();
+      debouncedSubmit.cancel(); // cancel on dep change AND unmount
+    };
+  }, [onSubmit, debouncedSubmit, form]);
 
   return (
     <form className="w-full">

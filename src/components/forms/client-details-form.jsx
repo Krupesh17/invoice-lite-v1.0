@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -14,15 +14,24 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { debounce } from "lodash";
 import clientDetailsFormSchema from "@/schemas/client-details-form-schema";
+import { useDispatch, useSelector } from "react-redux";
+import { updateClientDetails } from "@/store/slices/invoice-slice";
+import { useFormErrorSync } from "@/hooks/use-form-error-sync";
 
 const ClientDetailsForm = () => {
+  const dispatch = useDispatch();
+  const invoiceFields = useSelector((state) => state.invoice.invoiceFields);
+
   const form = useForm({
     resolver: zodResolver(clientDetailsFormSchema),
     defaultValues: {
-      clientName: "BrightWave Solutions, Inc.",
-      clientAddress: "4567 Elm Street, Suite 300 Austin, TX 78701 USA",
-      clientFields: [],
+      clientName: invoiceFields?.clientDetails?.name ?? "John Doe",
+      clientAddress:
+        invoiceFields?.clientDetails?.address ??
+        "4567 Elm Street, Anytown, USA",
+      clientFields: invoiceFields?.clientDetails?.metadata ?? [],
     },
+    mode: "onChange", // validates on change so errors sync in real-time
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -30,24 +39,45 @@ const ClientDetailsForm = () => {
     control: form.control,
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
-  };
+  const {
+    formState: { errors },
+  } = form;
+
+  // ✅ One line per form — unique ID for each
+  useFormErrorSync("clientDetailsForm", errors);
+
+  const onSubmit = useCallback(
+    (data) => {
+      dispatch(
+        updateClientDetails({
+          name: data?.clientName,
+          address: data?.clientAddress,
+          metadata: data?.clientFields,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  const onSubmitRef = useRef(onSubmit);
 
   const debouncedSubmit = useCallback(
     debounce(() => {
-      form.handleSubmit(onSubmit)();
+      form.handleSubmit((...args) => onSubmitRef.current(...args))();
     }, 1000),
     [],
   );
 
   useEffect(() => {
-    const subscription = form.watch(() => {
-      debouncedSubmit();
-    });
+    onSubmitRef.current = onSubmit;
 
-    return () => subscription.unsubscribe();
-  }, [form, debouncedSubmit]);
+    const subscription = form.watch(() => debouncedSubmit());
+
+    return () => {
+      subscription.unsubscribe();
+      debouncedSubmit.cancel();
+    };
+  }, [onSubmit, debouncedSubmit, form]);
 
   return (
     <form className="w-full">

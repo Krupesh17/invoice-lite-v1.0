@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -14,15 +14,22 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { debounce } from "lodash";
 import additionalInformationFormSchema from "@/schemas/additional-information-form-schema";
+import { useDispatch, useSelector } from "react-redux";
+import { updateMetadata } from "@/store/slices/invoice-slice";
+import { useFormErrorSync } from "@/hooks/use-form-error-sync";
 
 function AdditionalInformationForm() {
+  const dispatch = useDispatch();
+  const invoiceFields = useSelector((state) => state.invoice.invoiceFields);
+
   const form = useForm({
     resolver: zodResolver(additionalInformationFormSchema),
     defaultValues: {
-      notes: "",
-      terms: "",
-      paymentInformation: [],
+      notes: invoiceFields?.metadata?.notes ?? "",
+      terms: invoiceFields?.metadata?.terms ?? "",
+      paymentInformation: invoiceFields?.metadata?.paymentInformation ?? [],
     },
+    mode: "onChange", // validates on change so errors sync in real-time
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -30,24 +37,39 @@ function AdditionalInformationForm() {
     control: form.control,
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
-  };
+  const {
+    formState: { errors },
+  } = form;
+
+  // ✅ One line per form — unique ID for each
+  useFormErrorSync("additionalInformationForm", errors);
+
+  const onSubmit = useCallback(
+    (data) => {
+      dispatch(updateMetadata(data));
+    },
+    [dispatch],
+  );
+
+  const onSubmitRef = useRef(onSubmit);
 
   const debouncedSubmit = useCallback(
     debounce(() => {
-      form.handleSubmit(onSubmit)();
+      form.handleSubmit((...args) => onSubmitRef.current(...args))();
     }, 1000),
     [],
   );
 
   useEffect(() => {
-    const subscription = form.watch(() => {
-      debouncedSubmit();
-    });
+    onSubmitRef.current = onSubmit;
 
-    return () => subscription.unsubscribe();
-  }, [form, debouncedSubmit]);
+    const subscription = form.watch(() => debouncedSubmit());
+
+    return () => {
+      subscription.unsubscribe();
+      debouncedSubmit.cancel();
+    };
+  }, [onSubmit, debouncedSubmit, form]);
 
   return (
     <form className="w-full">

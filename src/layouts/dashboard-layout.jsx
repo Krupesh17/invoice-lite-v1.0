@@ -7,7 +7,7 @@ function DashboardLayout() {
   return (
     <SidebarProvider>
       <DashboardSidebar />
-      <SidebarInset>
+      <SidebarInset className="overflow-hidden">
         <DashboardHeader />
         <main className="w-full h-[calc(100dvh-64px)] overflow-hidden">
           <Outlet />

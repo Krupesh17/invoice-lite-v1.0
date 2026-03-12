@@ -3,6 +3,10 @@ import CreateInvoiceSectionAccordion from "./create-invoice-section-accordion";
 import CreateInvoiceSectionNavbar from "./create-invoice-section-navbar";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Columns2Icon, FormIcon, ViewIcon } from "lucide-react";
+import { useLocation, useParams } from "react-router-dom";
+import { getInvoiceById } from "@/utils/indexedDB/invoices-store";
+import { useDispatch } from "react-redux";
+import { updateInvoiceFields } from "@/store/slices/invoice-slice";
 
 const layoutOptionList = [
   { icon: <FormIcon />, label: "Form", value: "form" },
@@ -11,6 +15,24 @@ const layoutOptionList = [
 ];
 
 function CreateInvoiceSection() {
+  const { pathname } = useLocation();
+  const { storage, invoiceId } = useParams();
+  const isEditPath = pathname.split("/")[1] === "edit";
+
+  const dispatch = useDispatch();
+
+  const getInvoiceToEdit = async () => {
+    try {
+      let result;
+      if (storage === "local") {
+        result = await getInvoiceById(invoiceId);
+      }
+      return result;
+    } catch (err) {
+      console.error(err?.message);
+    }
+  };
+
   const isSmallScreen = useMediaQuery("(max-width: 767px)");
   const [selectedLayout, setSelectedLayout] = useState(
     isSmallScreen ? "form" : "both",
@@ -30,6 +52,17 @@ function CreateInvoiceSection() {
       setSelectedLayout("both");
     }
   }, [isSmallScreen]);
+
+  useEffect(() => {
+    if (!isEditPath) return;
+
+    const load = async () => {
+      const data = await getInvoiceToEdit();
+      if (data) dispatch(updateInvoiceFields(data));
+    };
+
+    load();
+  }, [isEditPath]);
 
   return (
     <section className="relative w-full h-full overflow-hidden">

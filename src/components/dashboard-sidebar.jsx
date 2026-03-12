@@ -14,6 +14,8 @@ import {
 import { FilePlus2Icon, FilesIcon, ToolCaseIcon } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
+import { useDispatch } from "react-redux";
+import { resetInvoiceFields } from "@/store/slices/invoice-slice";
 
 const data = {
   navMain: [
@@ -46,12 +48,16 @@ const data = {
 };
 
 function DashboardSidebar({ ...props }) {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { setOpenMobile } = useSidebar();
 
   const handleNavigation = (path) => {
+    if (path === "/create/invoice") {
+    }
     navigate(path);
+    dispatch(resetInvoiceFields());
     setOpenMobile(false);
   };
 

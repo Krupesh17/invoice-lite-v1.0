@@ -1,3 +1,11 @@
+import {
+  CheckIcon,
+  HourglassIcon,
+  RotateCcwIcon,
+  TriangleAlertIcon,
+  XIcon,
+} from "lucide-react";
+
 export const invoiceThemes = [
   { label: "Light", value: "light" },
   { label: "Dark", value: "dark" },
@@ -161,4 +169,36 @@ export const currencies = [
   { code: "ZAR", symbol: "R", name: "South African Rand" },
   { code: "ZMW", symbol: "ZK", name: "Zambian Kwacha" },
   { code: "ZWG", symbol: "ZiG", name: "Zimbabwe Gold" },
+];
+
+export const currencyMap = Object.fromEntries(
+  currencies.map((curr) => [curr.code, curr.symbol]),
+);
+
+export const statusCodes = [
+  {
+    value: "pending",
+    label: "Pending",
+    icon: HourglassIcon,
+  },
+  {
+    value: "success",
+    label: "Success",
+    icon: CheckIcon,
+  },
+  {
+    value: "error",
+    label: "Error",
+    icon: XIcon,
+  },
+  {
+    value: "expired",
+    label: "Expired",
+    icon: TriangleAlertIcon,
+  },
+  {
+    value: "refunded",
+    label: "Refunded",
+    icon: RotateCcwIcon,
+  },
 ];
