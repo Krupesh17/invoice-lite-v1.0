@@ -76,30 +76,10 @@ function CompanyDetailsForm() {
     [], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
-  // Here following 'Ref' and 'useEffect' is have use when user on '/edit' path and by default this 
-  // form's accordion is open so the data from invoice to be edited is not reflected in this form
-  // so this 'useEffect' make sure that the form fields have correct data. 
-  const isResettingRef = useRef(false);
-
-  useEffect(() => {
-    isResettingRef.current = true;
-    form.reset({
-      companyName: invoiceFields?.companyDetails?.name ?? "InvoiceLite Ltd",
-      companyAddress:
-        invoiceFields?.companyDetails?.address ??
-        "1234 Main Street, Anytown, USA",
-      companyFields: invoiceFields?.companyDetails?.metadata ?? [],
-    });
-  }, [invoiceFields?.companyDetails]);
-
   useEffect(() => {
     onSubmitRef.current = onSubmit; // always fresh before subscription fires
 
     const subscription = form.watch(() => {
-      if (isResettingRef.current) {
-        isResettingRef.current = false; // ✅ skip the dispatch triggered by reset
-        return;
-      }
       debouncedSubmit();
     });
 

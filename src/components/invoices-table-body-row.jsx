@@ -15,13 +15,14 @@ import { cn } from "@/lib/utils";
 import { currencyMap } from "@/constants";
 import InvoicesTableActionsPopover from "./invoices-table-actions-popover";
 import { timestampToReadableDateTime } from "@/helpers/timestamp";
+import TooltipWrapper from "./tooltip-wrapper";
 
 // Defined at module scope — object literals are created once, not on every render
 const STORAGE_TYPES = {
   local: {
     label: "Local",
     icon: <HardDriveIcon />,
-    className: "bg-indigo-600/20 text-indigo-500",
+    className: "bg-primary/20 text-primary",
   },
   server: {
     label: "Server",
@@ -115,12 +116,14 @@ function StorageBadge({ type }) {
 
 function ItemsBadge({ items }) {
   return (
-    <Badge
-      variant="secondary"
-      className="rounded-sm text-muted-foreground bg-gray-200 dark:bg-secondary"
-    >
-      <PackageIcon /> <span>{items ?? 0}</span>
-    </Badge>
+    <TooltipWrapper content={`${items ?? 0} items in this invoice`}>
+      <Badge
+        variant="secondary"
+        className="rounded-sm text-muted-foreground bg-gray-200 dark:bg-secondary"
+      >
+        <PackageIcon /> <span>{items ?? 0}</span>
+      </Badge>
+    </TooltipWrapper>
   );
 }
 

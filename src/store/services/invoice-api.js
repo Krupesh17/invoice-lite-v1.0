@@ -6,6 +6,7 @@ import {
   updateInvoice,
 } from "@/utils/indexedDB/invoices-store";
 import { createError } from "./helpers/api-error-handler";
+import { sortBy } from "@/helpers/data-sort";
 
 export const invoiceApi = createApi({
   reducerPath: "invoiceApi",
@@ -23,7 +24,8 @@ export const invoiceApi = createApi({
       async queryFn() {
         try {
           const result = await getInvoices();
-          return { data: result };
+          const sortedDataDesc = sortBy(result, "createdAt", "desc", "date");
+          return { data: sortedDataDesc };
         } catch (error) {
           return createError(error, "fetching your invoices");
         }

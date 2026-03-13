@@ -28,7 +28,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/create/invoice",
-        element: <CreateInvoiceSection />,
+        element: <CreateInvoiceSection key="create" />,
       },
       {
         path: "/invoices",
@@ -40,7 +40,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/edit/:storage/:invoiceId",
-        element: <CreateInvoiceSection />,
+        element: <CreateInvoiceSection key="edit" />,
       },
     ],
   },

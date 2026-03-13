@@ -20,8 +20,6 @@ import {
 } from "@/store/slices/dashboard-slice";
 import { useLocation } from "react-router-dom";
 
-// If we or on '/edit' page we have to update the invoice not save new one.
-
 function DownloadPopover() {
   const { pathname } = useLocation();
   const isEditPath = pathname.split("/")[1] === "edit";

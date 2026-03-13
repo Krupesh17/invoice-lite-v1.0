@@ -6,7 +6,10 @@ import { Columns2Icon, FormIcon, ViewIcon } from "lucide-react";
 import { useLocation, useParams } from "react-router-dom";
 import { getInvoiceById } from "@/utils/indexedDB/invoices-store";
 import { useDispatch } from "react-redux";
-import { updateInvoiceFields } from "@/store/slices/invoice-slice";
+import {
+  resetInvoiceFields,
+  updateInvoiceFields,
+} from "@/store/slices/invoice-slice";
 
 const layoutOptionList = [
   { icon: <FormIcon />, label: "Form", value: "form" },
@@ -18,6 +21,8 @@ function CreateInvoiceSection() {
   const { pathname } = useLocation();
   const { storage, invoiceId } = useParams();
   const isEditPath = pathname.split("/")[1] === "edit";
+
+  const [isReady, setIsReady] = useState(!isEditPath); // true immediately if not edit
 
   const dispatch = useDispatch();
 
@@ -58,11 +63,20 @@ function CreateInvoiceSection() {
 
     const load = async () => {
       const data = await getInvoiceToEdit();
-      if (data) dispatch(updateInvoiceFields(data));
+      if (data) {
+        dispatch(updateInvoiceFields(data));
+        setIsReady(true); // ✅ only mount forms after data is in Redux
+      }
     };
 
     load();
   }, [isEditPath]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetInvoiceFields());
+    };
+  }, []);
 
   return (
     <section className="relative w-full h-full overflow-hidden">
@@ -73,9 +87,8 @@ function CreateInvoiceSection() {
       />
 
       <div className="h-full grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] divide-x divide-border overflow-hidden">
-        {(selectedLayout === "both" || selectedLayout === "form") && (
-          <CreateInvoiceSectionAccordion />
-        )}
+        {(selectedLayout === "both" || selectedLayout === "form") &&
+          isReady && <CreateInvoiceSectionAccordion />}
         {(selectedLayout === "both" || selectedLayout === "preview") && (
           <div className="w-full h-full bg-accent dark:bg-background"></div>
         )}
