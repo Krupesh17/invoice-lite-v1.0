@@ -1,7 +1,15 @@
 import {
+  ArrowDown10Icon,
+  Calendar1Icon,
+  CalendarCheckIcon,
+  ChartNoAxesColumnIncreasingIcon,
   CheckIcon,
+  DatabaseIcon,
+  HardDriveIcon,
   HourglassIcon,
+  IdCardIcon,
   RotateCcwIcon,
+  ServerIcon,
   TriangleAlertIcon,
   XIcon,
 } from "lucide-react";
@@ -175,30 +183,85 @@ export const currencyMap = Object.fromEntries(
   currencies.map((curr) => [curr.code, curr.symbol]),
 );
 
+export const storageTypes = [
+  {
+    value: "local",
+    label: "Local",
+    icon: HardDriveIcon,
+    className: "bg-primary/20 text-primary",
+  },
+  {
+    value: "server",
+    label: "Server",
+    icon: ServerIcon,
+    className: "bg-pink-600/20 text-pink-500",
+  },
+];
+
+export const storageTypesObject = storageTypes.reduce((acc, curr) => {
+  acc[curr.value] = curr;
+  return acc;
+}, {});
+
 export const statusCodes = [
   {
     value: "pending",
     label: "Pending",
     icon: HourglassIcon,
+    className:
+      "bg-yellow-400/20 text-yellow-500 dark:bg-yellow-600/20 dark:text-yellow-500",
   },
   {
     value: "success",
     label: "Success",
     icon: CheckIcon,
+    className:
+      "bg-green-400/20 text-green-500 dark:bg-green-600/20 dark:text-green-500",
   },
   {
     value: "error",
     label: "Error",
     icon: XIcon,
+    className:
+      "bg-red-400/20 text-red-500 dark:bg-red-600/20 dark:text-red-500",
   },
   {
     value: "expired",
     label: "Expired",
     icon: TriangleAlertIcon,
+    className: "bg-gray-200 text-muted-foreground dark:bg-muted",
   },
   {
     value: "refunded",
     label: "Refunded",
     icon: RotateCcwIcon,
+    className:
+      "bg-purple-400/20 text-purple-500 dark:bg-purple-600/20 dark:text-purple-500",
   },
 ];
+
+export const statusCodesObject = statusCodes.reduce((acc, curr) => {
+  acc[curr.value] = curr;
+  return acc;
+}, {});
+
+export const invoiceFilterTypes = [
+  { value: "storage", label: "Storage", icon: DatabaseIcon },
+  { value: "id", label: "ID", icon: IdCardIcon },
+  { value: "createdAt", label: "Created At", icon: Calendar1Icon },
+  { value: "paidAt", label: "Paid At", icon: CalendarCheckIcon },
+  { value: "serialNo", label: "Serial No", icon: ArrowDown10Icon },
+  {
+    value: "status",
+    label: "Status",
+    icon: ChartNoAxesColumnIncreasingIcon,
+  },
+];
+
+export const invoiceFilterTypesObject = invoiceFilterTypes.reduce(
+  (acc, curr) => {
+    acc[curr.value] = curr;
+    return acc;
+  },
+  {},
+);

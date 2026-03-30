@@ -1,15 +1,14 @@
 // Always store timestamps in UTC for global compatibility
-export function getTimestamp() {
-  const now = new Date();
-  const year = now.getUTCFullYear();
-  const month = String(now.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(now.getUTCDate()).padStart(2, "0");
-  const hours = String(now.getUTCHours()).padStart(2, "0");
-  const minutes = String(now.getUTCMinutes()).padStart(2, "0");
-  const seconds = String(now.getUTCSeconds()).padStart(2, "0");
-  const microseconds = String(now.getMilliseconds()).padEnd(6, "0");
+export function getTimestamp(date) {
+  const d = date ? new Date(date) : new Date();
+  const year = d.getUTCFullYear();
+  const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  const hours = String(d.getUTCHours()).padStart(2, "0");
+  const minutes = String(d.getUTCMinutes()).padStart(2, "0");
+  const seconds = String(d.getUTCSeconds()).padStart(2, "0");
+  const microseconds = String(d.getMilliseconds()).padEnd(6, "0");
 
-  // Format: YYYY-MM-DD HH:mm:ss.microseconds+00 (UTC)
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${microseconds}+00`;
 }
 
@@ -32,4 +31,13 @@ export function timestampToReadableDateTime(timestamp) {
   hours = hours ? hours : 12;
 
   return `${day}/${month}/${year} - ${hours}:${minutes} ${ampm}`;
+}
+
+export function invoicesTableFilterTabDateFormatter(date) {
+  if (!date) return null;
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }

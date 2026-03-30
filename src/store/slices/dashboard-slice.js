@@ -9,6 +9,14 @@ const initialState = {
     quantity: null,
     unitPrice: null,
   },
+  invoicesTableFilters: {
+    storage: [],
+    id: "",
+    createdAt: { from: undefined, to: undefined },
+    paidAt: { from: undefined, to: undefined },
+    serialNo: "",
+    status: [],
+  },
   errors: {},
 };
 
@@ -30,6 +38,33 @@ const dashboardSlice = createSlice({
       };
       state.isInvoiceItemToEdit = false;
     },
+    updateInvoicesTableFilters: (state, action) => {
+      state.invoicesTableFilters = action.payload;
+    },
+    resetInvoicesTableFilters: (state) => {
+      state.invoicesTableFilters = {
+        storage: [],
+        id: "",
+        createdAt: { from: undefined, to: undefined },
+        paidAt: { from: undefined, to: undefined },
+        serialNo: "",
+        status: [],
+      };
+    },
+    clearInvoicesTableFilter: (state, action) => {
+      const type = action.payload;
+      const defaults = {
+        storage: [],
+        status: [],
+        id: "",
+        serialNo: "",
+        createdAt: { from: undefined, to: undefined },
+        paidAt: { from: undefined, to: undefined },
+      };
+      if (type in defaults) {
+        state.invoicesTableFilters[type] = defaults[type];
+      }
+    },
     setFormError(state, action) {
       const { formId, hasError } = action.payload;
       if (hasError) {
@@ -47,6 +82,9 @@ const dashboardSlice = createSlice({
 export const {
   updateInvoiceItemToEdit,
   resetInvoiceItemToEdit,
+  updateInvoicesTableFilters,
+  resetInvoicesTableFilters,
+  clearInvoicesTableFilter,
   setFormError,
   clearAllFormErrors,
 } = dashboardSlice.actions;
@@ -63,4 +101,20 @@ export const selectIsFormError = createSelector(
 
 export const selectFormErrorIds = createSelector(selectFormErrors, (errors) =>
   Object.keys(errors),
+);
+
+export const selectInvoicesTableFilters = (state) =>
+  state.dashboard.invoicesTableFilters;
+
+export const selectHasActiveInvoiceFilters = createSelector(
+  selectInvoicesTableFilters,
+  (filter) =>
+    filter.storage?.length > 0 ||
+    filter.status?.length > 0 ||
+    !!filter.id?.trim() ||
+    !!filter.serialNo?.trim() ||
+    !!filter.createdAt?.from ||
+    !!filter.createdAt?.to ||
+    !!filter.paidAt?.from ||
+    !!filter.paidAt?.to,
 );

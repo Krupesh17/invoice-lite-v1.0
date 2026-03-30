@@ -1,67 +1,16 @@
 import { memo } from "react";
 import { TableCell, TableRow } from "./ui/table";
 import { Badge } from "./ui/badge";
-import {
-  CheckIcon,
-  HardDriveIcon,
-  HourglassIcon,
-  PackageIcon,
-  RotateCcwIcon,
-  ServerIcon,
-  TriangleAlertIcon,
-  XIcon,
-} from "lucide-react";
+import { PackageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { currencyMap } from "@/constants";
+import {
+  currencyMap,
+  statusCodesObject,
+  storageTypesObject,
+} from "@/constants";
 import InvoicesTableActionsPopover from "./invoices-table-actions-popover";
 import { timestampToReadableDateTime } from "@/helpers/timestamp";
 import TooltipWrapper from "./tooltip-wrapper";
-
-// Defined at module scope — object literals are created once, not on every render
-const STORAGE_TYPES = {
-  local: {
-    label: "Local",
-    icon: <HardDriveIcon />,
-    className: "bg-primary/20 text-primary",
-  },
-  server: {
-    label: "Server",
-    icon: <ServerIcon />,
-    className: "bg-pink-600/20 text-pink-500",
-  },
-};
-
-const STATUS_CODES = {
-  pending: {
-    label: "Pending",
-    icon: <HourglassIcon />,
-    className:
-      "bg-yellow-400/20 text-yellow-500 dark:bg-yellow-600/20 dark:text-yellow-500",
-  },
-  success: {
-    label: "Success",
-    icon: <CheckIcon />,
-    className:
-      "bg-green-400/20 text-green-500 dark:bg-green-600/20 dark:text-green-500",
-  },
-  error: {
-    label: "Error",
-    icon: <XIcon />,
-    className:
-      "bg-red-400/20 text-red-500 dark:bg-red-600/20 dark:text-red-500",
-  },
-  expired: {
-    label: "Expired",
-    icon: <TriangleAlertIcon />,
-    className: "bg-gray-200 text-muted-foreground dark:bg-muted",
-  },
-  refunded: {
-    label: "Refunded",
-    icon: <RotateCcwIcon />,
-    className:
-      "bg-purple-400/20 text-purple-500 dark:bg-purple-600/20 dark:text-purple-500",
-  },
-};
 
 // memo prevents re-render when parent re-renders but invoiceData prop hasn't changed
 const InvoicesTableBodyRow = memo(function InvoicesTableBodyRow({
@@ -106,10 +55,10 @@ const InvoicesTableBodyRow = memo(function InvoicesTableBodyRow({
 export default InvoicesTableBodyRow;
 
 function StorageBadge({ type }) {
-  const storage = STORAGE_TYPES[type];
+  const storage = storageTypesObject[type];
   return (
     <Badge variant="secondary" className={cn("rounded-sm", storage?.className)}>
-      {storage?.icon} <span>{storage?.label}</span>
+      <storage.icon /> <span>{storage?.label}</span>
     </Badge>
   );
 }
@@ -128,10 +77,10 @@ function ItemsBadge({ items }) {
 }
 
 function StatusBadge({ status }) {
-  const code = STATUS_CODES[status];
+  const code = statusCodesObject[status];
   return (
     <Badge variant="secondary" className={cn("rounded-sm", code?.className)}>
-      {code?.icon} <span>{code?.label}</span>
+      <code.icon /> <span>{code?.label}</span>
     </Badge>
   );
 }
