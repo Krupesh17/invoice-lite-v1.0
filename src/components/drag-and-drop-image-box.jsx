@@ -29,8 +29,8 @@ function DragAndDropImageBox({ type, storageType, iconVisible = false }) {
         const base64 = await compressImageToBase64(file, {
           maxWidth: 300,
           maxHeight: 300,
-          quality: 0.85,
-          format: "image/webp",
+          quality: 0.7,
+          format: "image/jpeg",
         });
 
         const data = { base64, type };

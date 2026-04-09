@@ -17,7 +17,7 @@ import { Button } from "./ui/button";
 import { resetInvoiceFields } from "@/store/slices/invoice-slice";
 import { useDispatch } from "react-redux";
 
-const data = {
+const DASHBOARD_SIDEBAR_MENU = {
   navMain: [
     {
       title: "Create",
@@ -66,7 +66,7 @@ function DashboardSidebar({ ...props }) {
       <SidebarHeader className="px-4 py-3.5">
         <div className="flex items-center gap-2 h-9">
           <img src="/assets/invoice-lite-logo.svg" />
-          <h2 className="text-2xl font-semibold space-x-1 text-foreground">
+          <h2 className="text-2xl font-semibold space-x-1 text-foreground font-syne">
             <span>Invoice</span>
             <sup className="text-xs font-normal text-muted-foreground">
               lite
@@ -76,7 +76,7 @@ function DashboardSidebar({ ...props }) {
       </SidebarHeader>
 
       <SidebarContent>
-        {data.navMain.map((item) => (
+        {DASHBOARD_SIDEBAR_MENU.navMain.map((item) => (
           <SidebarGroup className="px-4" key={item.title}>
             <SidebarGroupLabel
               className={"text-muted-foreground/60 font-normal"}

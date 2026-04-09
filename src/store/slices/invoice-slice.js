@@ -3,16 +3,16 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   invoiceFields: {
     companyDetails: {
-      logo: null, // Base64 (IndexedDB) | URL (Supabase)
-      signature: null, // Base64 (IndexedDB) | URL (Supabase)
+      logo: null,
+      signature: null,
       name: "InvoiceLite Ltd",
       address: "1234 Main Street, Anytown, USA",
-      metadata: [], // Will Store Objects {label: "", value: ""}
+      metadata: [],
     },
     clientDetails: {
       name: "John Doe",
       address: "4567 Elm Street, Anytown, USA",
-      metadata: [], // Will Store Objects {label: "", value: ""}
+      metadata: [],
     },
     invoiceDetails: {
       currency: "USD",
@@ -22,16 +22,16 @@ const initialState = {
       },
       invoicePrefix: "Invoice INV-",
       serialNumber: "0001",
-      invoiceDate: new Date().toISOString(), // Store as ISO String (Redux requires all state and actions to be serializable (plain JSON).)
+      invoiceDate: new Date().toISOString(),
       invoiceDueDate: null,
-      paymentTerms: "", //
-      billingDetails: [], // Will Store Objects {label: "", value: "", Type: "" (Fixed Or Percentage)}
+      paymentTerms: "",
+      billingDetails: [],
     },
-    invoiceItems: [], // Will Store Objects {id:"", name: "", description: "", quantity: 0, unitPrice: 0}
+    invoiceItems: [],
     metadata: {
       notes: "",
       terms: "",
-      paymentInformation: [], // Will Store Objects {label: "", value: ""}
+      paymentInformation: [],
     },
   },
 };

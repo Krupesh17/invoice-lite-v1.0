@@ -19,12 +19,15 @@ import {
   selectIsFormError,
 } from "@/store/slices/dashboard-slice";
 import { useLocation } from "react-router-dom";
+import { pdf } from "@react-pdf/renderer";
+import InvoicePdf from "./invoice-pdf";
 
 function DownloadPopover() {
   const { pathname } = useLocation();
   const isEditPath = pathname.split("/")[1] === "edit";
 
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(null);
 
   const isFormError = useSelector(selectIsFormError);
   const errorFormIds = useSelector(selectFormErrorIds);
@@ -63,14 +66,37 @@ function DownloadPopover() {
     }
   }, [isFormError, errorFormIds, invoiceFields, saveInvoice]);
 
-  const handleViewPdf = useCallback(() => {
-    console.log("View PDF");
-  }, []);
+  const generateBlob = async () => {
+    return await pdf(<InvoicePdf invoice={invoiceFields} />).toBlob();
+  };
 
-  const handleDownloadPdf = useCallback(() => {
-    console.log("Download PDF");
-  }, []);
+  const handleViewPdf = async () => {
+    setLoading("view");
+    try {
+      const blob = await generateBlob();
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+    } finally {
+      setLoading(null);
+    }
+  };
 
+  const handleDownloadPdf = async () => {
+    setLoading("download");
+    try {
+      const blob = await generateBlob();
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${invoiceFields?.invoiceDetails?.invoicePrefix}${invoiceFields?.invoiceDetails?.serialNumber}`;
+      link.click();
+
+      URL.revokeObjectURL(url);
+    } finally {
+      setLoading(null);
+    }
+  };
   const popoverOptions = useMemo(
     () => [
       {
@@ -85,12 +111,14 @@ function DownloadPopover() {
         icon: ScanEyeIcon,
         label: "View PDF",
         onClick: handleViewPdf,
+        isLoading: loading === "view",
       },
       {
         id: "download-pdf",
         icon: FileDownIcon,
         label: "Download PDF",
         onClick: handleDownloadPdf,
+        isLoading: loading === "download",
       },
     ],
     [
@@ -128,6 +156,22 @@ function DownloadPopover() {
             {item.label}
           </Button>
         ))}
+
+        {/* <PDFDownloadLink
+          className="h-8 px-3 inline-flex items-center shrink-0 rounded-md text-xs font-medium hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+          document={<InvoicePdf invoice={invoiceFields} />}
+          fileName="document.pdf"
+        >
+          {({ loading }) =>
+            loading ? (
+              "Loading document..."
+            ) : (
+              <div className="inline-flex items-center justify-start gap-1.5 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0">
+                <FileDownIcon /> <span>Download PDF</span>
+              </div>
+            )
+          }
+        </PDFDownloadLink> */}
       </PopoverContent>
     </Popover>
   );

@@ -25,6 +25,12 @@ export const compressImageToBase64 = (file, options = {}) => {
       canvas.height = height;
 
       const ctx = canvas.getContext("2d");
+
+      if (format === "image/jpeg") {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
       ctx.drawImage(img, 0, 0, width, height);
 
       const base64 = canvas.toDataURL(format, quality);

@@ -10,6 +10,7 @@ import {
   resetInvoiceFields,
   updateInvoiceFields,
 } from "@/store/slices/invoice-slice";
+import InvoicePdfViewer from "./invoice-pdf/invoice-pdf-viewer";
 
 const layoutOptionList = [
   { icon: <FormIcon />, label: "Form", value: "form" },
@@ -79,7 +80,7 @@ function CreateInvoiceSection() {
   }, []);
 
   return (
-    <section className="relative w-full h-full overflow-hidden">
+    <section className="relative flex flex-col w-full h-full overflow-hidden">
       <CreateInvoiceSectionNavbar
         selectedLayout={selectedLayout}
         setSelectedLayout={setSelectedLayout}
@@ -90,7 +91,9 @@ function CreateInvoiceSection() {
         {(selectedLayout === "both" || selectedLayout === "form") &&
           isReady && <CreateInvoiceSectionAccordion />}
         {(selectedLayout === "both" || selectedLayout === "preview") && (
-          <div className="w-full h-full bg-accent dark:bg-background"></div>
+          <div className="w-full h-full bg-accent dark:bg-background">
+            <InvoicePdfViewer />
+          </div>
         )}
       </div>
     </section>

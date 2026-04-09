@@ -18,7 +18,7 @@ function CreateInvoiceSectionNavbar({
   return (
     <nav className="sticky top-0 bg-background h-16 border-b flex shrink-0 items-center justify-between gap-2 px-4">
       <div className="flex items-center gap-2">
-        <Button type="button" size="sm" variant="outline">
+        <Button type="button" size="sm" variant="outline" className={"hidden"}>
           <ImportIcon />
           <span>Import</span>
         </Button>
