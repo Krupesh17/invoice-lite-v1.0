@@ -29,10 +29,7 @@ function LandingHeroSection() {
       <div className="hero-grid" />
 
       {/* Orange glow blob */}
-      <motion.div
-        className="pointer-events-none absolute top-2/4 left-2/4 w-175 h-175 bg-[radial-gradient(circle,rgba(255,96,0,0.12)_0%,transparent_65%)]"
-        {...blobPulse}
-      />
+      <div className="pointer-events-none absolute top-2 left-2/4 w-175 h-175 bg-[radial-gradient(circle,rgba(255,96,0,0.12)_0%,transparent_65%)]" />
 
       {/* Content */}
       <motion.div

@@ -8,7 +8,6 @@ import LandingPdfExportSection from "@/components/landing-pdf-export-section";
 import LandingCallToActionSection from "@/components/landing-call-to-action-section";
 import LandingFooterSection from "@/components/landing-footer-section";
 
-// Content overflow and get corrected when i scroll to the bottom.
 function LandingPage() {
   return (
     <div
