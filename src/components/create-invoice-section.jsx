@@ -10,7 +10,7 @@ import {
   resetInvoiceFields,
   updateInvoiceFields,
 } from "@/store/slices/invoice-slice";
-import InvoicePdfViewer from "./invoice-pdf/invoice-pdf-viewer";
+import InvoiceCopyPreviewer from "./invoice-copy/invoice-copy-previewer";
 
 const layoutOptionList = [
   { icon: <FormIcon />, label: "Form", value: "form" },
@@ -92,7 +92,7 @@ function CreateInvoiceSection() {
           isReady && <CreateInvoiceSectionAccordion />}
         {(selectedLayout === "both" || selectedLayout === "preview") && (
           <div className="w-full h-full bg-accent dark:bg-background">
-            <InvoicePdfViewer />
+            <InvoiceCopyPreviewer />
           </div>
         )}
       </div>

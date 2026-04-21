@@ -265,3 +265,10 @@ export const invoiceFilterTypesObject = invoiceFilterTypes.reduce(
   },
   {},
 );
+
+// INVOICE COPY
+export const A4_RATIO = 297 / 210;
+export const BASE_WIDTH = 794;
+export const BASE_HEIGHT = Math.round(BASE_WIDTH * A4_RATIO); // 1123px
+export const PAGE_PADDING = 0;
+export const CONTENT_PAD = 28;

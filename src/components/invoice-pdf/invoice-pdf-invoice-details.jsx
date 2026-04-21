@@ -1,6 +1,6 @@
 import { Image, View } from "@react-pdf/renderer";
-import { formatDate } from "./helpers/invoice-data-formatters";
 import InvoicePdfCustomLabelValueItem from "./invoice-pdf-custom-label-value-item";
+import { formatDate } from "@/helpers/invoice-helpers";
 
 function InvoicePdfInvoiceDetails({ invoice }) {
   const { serialNumber, invoiceDate, invoiceDueDate, paymentTerms, currency } =

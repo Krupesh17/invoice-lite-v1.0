@@ -2,7 +2,7 @@ import { Table, TD, TH, TR } from "@ag-media/react-pdf-table";
 import React from "react";
 import styles from "./styles";
 import { Text, View } from "@react-pdf/renderer";
-import { formatAmount } from "./helpers/invoice-data-formatters";
+import { formatAmount } from "@/helpers/invoice-helpers";
 
 function InvoicePdfTable({ invoice }) {
   const { invoiceItems, invoiceDetails } = invoice;

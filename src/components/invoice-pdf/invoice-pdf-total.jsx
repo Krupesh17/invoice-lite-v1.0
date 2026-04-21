@@ -1,6 +1,6 @@
 import { Image, Text, View } from "@react-pdf/renderer";
 import styles from "./styles";
-import { formatAmount } from "./helpers/invoice-data-formatters";
+import { formatAmount } from "@/helpers/invoice-helpers";
 
 function computeTotals(invoice) {
   const subtotal = invoice.invoiceItems.reduce(
