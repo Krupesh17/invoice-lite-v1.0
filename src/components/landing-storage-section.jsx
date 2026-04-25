@@ -13,12 +13,14 @@ const STORAGE_OPTIONS = [
     tag: "Works offline",
     desc: "Store invoices directly in your browser. Fully offline-capable, zero server dependency, and blazing fast retrieval — even without internet.",
     icon: <HardDriveIcon className="size-7" />,
+    available: true,
   },
   {
     label: "Cloud — Supabase",
     tag: "Cross-device sync",
     desc: "Sync invoices and assets to your Supabase backend. Access your data from any device, with secure storage for logos and attachments.",
     icon: <ServerIcon className="size-7" />,
+    available: false,
   },
 ];
 
@@ -62,13 +64,18 @@ function LandingStorageSection() {
           {STORAGE_OPTIONS.map((opt) => (
             <motion.div
               key={opt.label}
-              className="bg-card border rounded-[18px] p-9 text-center cursor-default hover:border-primary/30hover:shadow-[0_24px_80px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_24px_80px_rgba(0,0,0,0.6)]"
+              className="relative bg-card border rounded-[18px] p-9 text-center cursor-default hover:border-primary/30hover:shadow-[0_24px_80px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_24px_80px_rgba(0,0,0,0.6)]"
               variants={scaleIn}
               whileHover={{
                 y: -6,
               }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             >
+              {!opt.available && (
+                <div className="absolute right-3 top-3 text-[10px] px-1 rounded bg-yellow-400/20 text-yellow-600 border border-yellow-400/80 dark:bg-yellow-600/20 dark:text-yellow-500 dark:border-yellow-400/20">
+                  Coming Soon
+                </div>
+              )}
               <div className="w-16 h-16 rounded-2xl bg-primary/20 border border-primary/20 grid place-items-center mx-auto mb-5 text-primary">
                 {opt.icon}
               </div>
