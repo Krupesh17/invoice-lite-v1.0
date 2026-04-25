@@ -106,13 +106,18 @@ function DashboardSidebar({ ...props }) {
       <SidebarFooter className="p-4">
         <div className="bg-sidebar-accent p-4 rounded-xl space-y-3 border border-sidebar-border">
           <div className="space-y-1">
-            <h4 className="text-base font-semibold">Login</h4>
+            <h4 className="text-base font-semibold flex items-center gap-1">
+              Login
+              <small className="text-[10px] bg-yellow-400/20 text-yellow-600 border border-yellow-400/80 dark:bg-yellow-600/20 dark:text-yellow-500 dark:border-yellow-400/20 px-1 rounded">
+                Coming Soon
+              </small>
+            </h4>
             <p className="text-xs text-muted-foreground">
-              Login to your account to save your data and access your data
-              anytime, anywhere
+              Work in progress! Soon you’ll log in and sync invoices across
+              devices.
             </p>
           </div>
-          <Button type="button" size="xs">
+          <Button type="button" size="xs" disabled>
             Login
           </Button>
         </div>

@@ -1,3 +1,4 @@
+import { statusCodes } from "@/constants";
 import {
   cardStagger,
   fadeUp,
@@ -69,33 +70,6 @@ const FILTER_CHIPS = [
   { label: "ID: a1bc023-d0ef456", active: false },
   { label: "Apr 1 ➝ Apr 30", active: false },
   { label: "Serial: INV-0002", active: false },
-];
-
-const STATUSES = [
-  {
-    label: "Pending",
-    className:
-      "bg-yellow-400/20 text-yellow-500 dark:bg-yellow-600/20 dark:text-yellow-500",
-  },
-  {
-    label: "success",
-    className:
-      "bg-green-400/20 text-green-500 dark:bg-green-600/20 dark:text-green-500",
-  },
-  {
-    label: "Error",
-    className:
-      "bg-red-400/20 text-red-500 dark:bg-red-600/20 dark:text-red-500",
-  },
-  {
-    label: "Expired",
-    className: "bg-gray-200 text-muted-foreground dark:bg-muted",
-  },
-  {
-    label: "Refunded",
-    className:
-      "bg-purple-400/20 text-purple-500 dark:bg-purple-600/20 dark:text-purple-500",
-  },
 ];
 
 function LandingFeaturesSection() {
@@ -179,14 +153,14 @@ function LandingFeaturesSection() {
                 history.
               </p>
               <div className="flex flex-wrap gap-2 mt-5">
-                {STATUSES.map((status) => (
+                {statusCodes.map((status) => (
                   <motion.span
                     key={status?.label}
                     className={`h-8 px-3 flex items-center gap-1.5 rounded-lg text-xs font-semibold ${status?.className}`}
                     whileHover={{ scale: 1.06 }}
                     transition={{ duration: 0.15 }}
                   >
-                    <span className="size-1.5 rounded-full bg-current" />
+                    <status.icon className="size-4" />
                     {status?.label}
                   </motion.span>
                 ))}
