@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { clearInvoicesTableFilter } from "@/store/slices/dashboard-slice";
-import InvoicesTableFilterTab from "./Invoices-table-filter-tab";
+import InvoicesTableFilterTab from "./invoices-table-filter-tab";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 
 function getActiveFilters(filter) {
