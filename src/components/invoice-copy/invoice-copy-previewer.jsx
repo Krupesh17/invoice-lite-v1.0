@@ -1,6 +1,5 @@
-// InvoiceCopyPreviewer.jsx
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux"; // ← add
+import { useSelector } from "react-redux";
 import { A4_RATIO, BASE_WIDTH } from "@/constants";
 import { buildPageLayout } from "@/helpers/invoice-helpers";
 import InvoiceCopyHiddenMeasurer from "./invoice-copy-hidden-measurer";
@@ -19,25 +18,24 @@ function InvoiceCopyPreviewer() {
     setMeasured(true);
   }, []);
 
- const invoiceFields = useSelector((state) => state?.invoice?.invoiceFields);
-const isDataReady = invoiceFields != null;
-const prevInvoiceFieldsRef = useRef(invoiceFields);
+  const invoiceFields = useSelector((state) => state?.invoice?.invoiceFields);
+  const isDataReady = invoiceFields != null;
+  const prevInvoiceFieldsRef = useRef(invoiceFields);
 
-useEffect(() => {
-  if (prevInvoiceFieldsRef.current === invoiceFields) return;
-  prevInvoiceFieldsRef.current = invoiceFields;
-  setMeasured(false);
-  setPageLayout(null);
-}, [invoiceFields]);
+  useEffect(() => {
+    if (prevInvoiceFieldsRef.current === invoiceFields) return;
+    prevInvoiceFieldsRef.current = invoiceFields;
+    setMeasured(false);
+    setPageLayout(null);
+  }, [invoiceFields]);
 
   useEffect(() => {
     if (!containerRef.current) return;
     const obs = new ResizeObserver((entries) => {
       for (const e of entries) {
-        const { width, height } = e.contentRect;
-        const cw = Math.floor(Math.min(width, height / A4_RATIO));
-        setCanvasWidth(cw);
-        setScale(cw / BASE_WIDTH);
+        const cw = Math.floor(e.contentRect.width) - 40;
+        setCanvasWidth(Math.max(cw, 300));
+        setScale(Math.max(cw, 300) / BASE_WIDTH);
       }
     });
     obs.observe(containerRef.current);
@@ -45,28 +43,24 @@ useEffect(() => {
   }, []);
 
   const canvasHeight = Math.round(canvasWidth * A4_RATIO);
-  const multiPage = pageLayout && pageLayout.length > 1;
 
   return (
     <>
-      {/* Wait for real data before measuring */}
-      {isDataReady &&
-        !measured && ( // ← changed
-          <InvoiceCopyHiddenMeasurer onMeasured={handleMeasured} />
-        )}
-      <div className="relative w-full h-[calc(100dvh-130px)] bg-sidebar p-5 flex items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-5 pointer-events-none opacity-0"
-          ref={containerRef}
-        />
+      {isDataReady && !measured && (
+        <InvoiceCopyHiddenMeasurer onMeasured={handleMeasured} />
+      )}
 
+      <div
+        className="w-full h-[calc(100dvh-130px)] overflow-y-auto overflow-x-hidden shell-scrollbar"
+        ref={containerRef}
+      >
         {pageLayout && (
-          <div className={`scroller${multiPage ? " multi" : ""}`}>
+          <div className="flex flex-col items-center gap-5 p-5 min-h-full">
             {pageLayout.map((pageDesc, idx) => (
               <div
                 key={idx}
-                className="shrink-0 bg-white overflow-hidden"
-                style={{ width: canvasWidth, height: canvasHeight }}
+                className="shrink-0 bg-white overflow-hidden w-full"
+                style={{ height: canvasHeight }}
               >
                 <InvoiceCopy pageDesc={pageDesc} scale={scale} />
               </div>

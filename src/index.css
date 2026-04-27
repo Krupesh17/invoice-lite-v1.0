@@ -196,32 +196,16 @@
     z-index: -1;
   }
 
-  /* INVOICE COPY */
-  .scroller {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    max-height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: none;
-    padding: 2px 4px;
-  }
-  .scroller::-webkit-scrollbar {
-    display: none;
-  }
-  .scroller.multi {
+  .shell-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: #adb5bd transparent;
   }
-  .scroller.multi::-webkit-scrollbar {
-    display: block;
-    width: 4px;
+  .shell-scrollbar::-webkit-scrollbar {
+    width: 6px;
   }
-  .scroller.multi::-webkit-scrollbar-thumb {
+  .shell-scrollbar::-webkit-scrollbar-thumb {
     background: #adb5bd;
-    border-radius: 4px;
+    border-radius: 6px;
   }
 }
 
