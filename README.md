@@ -5,7 +5,7 @@ A clean, offline-first invoice generator built with React. Create professional i
 ---
 
 ## Screenshots
-|---|---|
+| | |
 | ![Landing Page](https://github.com/user-attachments/assets/1589f621-c104-48dc-9fb7-fe098f76e9cc) | ![Create Invoice](https://github.com/user-attachments/assets/6de75a43-1d90-42d4-81e4-265073188f79) |
 | ![Invoices Table](https://github.com/user-attachments/assets/f956395a-c073-4991-92ce-d4695ec12723) | ![Manage Assets](https://github.com/user-attachments/assets/f34a6370-47b9-4efd-84cd-28d71bc9cf8f) |
 
